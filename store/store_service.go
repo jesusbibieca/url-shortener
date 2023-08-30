@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/jesusbibieca/url-shortener/environment"
 )
 
 type StorageService struct {
@@ -27,10 +28,15 @@ var (
 const CacheDuration = 6 * time.Hour
 
 func InitializeStore() *StorageService {
+	config, err := environment.LoadConfig()
+	if err != nil {
+		panic(fmt.Sprintf("Error loading config: %v", err))
+	}
+
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     config.RedisAddress,
+		Password: config.RedisPassword,
+		DB:       config.RedisDb,
 	})
 
 	pong, err := redisClient.Ping(ctx).Result()
@@ -38,7 +44,7 @@ func InitializeStore() *StorageService {
 		panic(fmt.Sprintf("Error init Redis: %v", err))
 	}
 
-	fmt.Printf("\nRedis started successfully: pong message = {%s}", pong)
+	fmt.Printf("\nRedis started successfully: pong message = {%s}\n", pong)
 
 	storageService.redisClient = redisClient
 	return storageService

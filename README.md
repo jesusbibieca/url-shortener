@@ -25,8 +25,9 @@ I'm learning Go and I wanted to build something simple to get started. I want to
 1. Clone the repo
 2. Run `go get` to install dependencies
 3. Install and run Redis on port `6379`
-4. Run `go run main.go`
-5. Navigate to `localhost:8080` in your browser
+4. Copy the `.env.example` file to `.env` and update the values `cp .env.example .env`
+5. Run `make dev` or `make dev-watch` to auto reload on changes
+6. Navigate to `localhost:8080` in your browser
 
 ## Usage
 
@@ -74,7 +75,7 @@ This is the endpoint to redirect to the original URL. It will redirect to the or
 - [ ] Add more tests
 - [ ] Add better error handling
 - [ ] Add a logger
-- [ ] Add a config to set the port and other variables (maybe viper?)
+- [x] Add a config to set the port and other variables (maybe viper?)
 - [ ] Add a config to start redis and db with docker-compose (or something similar)
 - [ ] Add a database to store the URLs long term (maybe Postgres? or just sqlite?)
 - [ ] Add authentication
