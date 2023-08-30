@@ -25,7 +25,7 @@ I'm learning Go and I wanted to build something simple to get started. I want to
 1. Clone the repo
 2. Run `go get` to install dependencies
 3. Install and run Redis on port `6379`
-4. Copy the `.env.example` file to `.env` and update the values `cp .env.example .env`
+4. Copy the `.env.example.yaml` file to `.env.yaml` and update the values `cp .env.example.yaml .env.yaml`
 5. Run `make dev` or `make dev-watch` to auto reload on changes
 6. Navigate to `localhost:8080` in your browser
 

@@ -1,6 +1,7 @@
 package environment
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -20,7 +21,11 @@ type config struct {
 var Config config
 
 func LoadConfig() (*config, error) {
-  viper.SetConfigFile(".env")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./")
+	viper.AddConfigPath("../")
+	viper.AddConfigPath("../../")
 	
   // Find and read the config file
   err := viper.ReadInConfig()
@@ -29,11 +34,14 @@ func LoadConfig() (*config, error) {
 		  log.Fatalf("Error while reading config file %s", err)
 		}
 
-		err = viper.Unmarshal(&Config)
-		if err != nil {
-			log.Fatalf("unable to decode into struct, %v", err)
-			return nil, err
-		}
+	fmt.Println(viper.ConfigFileUsed())
 
+	err = viper.Unmarshal(&Config)
+	if err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
+		return nil, err
+	}
+
+	fmt.Println(Config)
 return &Config, nil
 }

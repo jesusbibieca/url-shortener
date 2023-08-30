@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jesusbibieca/url-shortener/environment"
 	"github.com/jesusbibieca/url-shortener/shortener"
 	"github.com/jesusbibieca/url-shortener/store"
 )
@@ -16,6 +18,11 @@ type ShortUrlCreateRequest struct {
 const BASE_URL = "http://localhost:8080/"
 
 func CreateShortUrl(c *gin.Context) {
+	config, err := environment.LoadConfig()
+	if err != nil {
+		panic(fmt.Sprintf("Error loading config: %v", err))
+	}
+
 	var shortUrlRequest ShortUrlCreateRequest
 	if err := c.ShouldBindJSON(&shortUrlRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -25,7 +32,7 @@ func CreateShortUrl(c *gin.Context) {
 	store.SaveUrlMapping(shortUrl, shortUrlRequest.Url, shortUrlRequest.UserId)
 
 	c.JSON(http.StatusOK, gin.H{
-		"shortUrl": BASE_URL + shortUrl,
+		"shortUrl": "http://" + config.AppAddress + shortUrl,
 	})
 }
 
