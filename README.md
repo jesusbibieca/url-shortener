@@ -14,6 +14,11 @@ I'm learning Go and I wanted to build something simple to get started. I want to
 
 - Go 1.20+
 - Redis
+- Reflex (optional) - This is used to auto reload the server when a file changes. You can install it with
+
+```bash
+  go install github.com/cespare/reflex
+```
 
 ### Steps
 
@@ -65,7 +70,7 @@ This is the endpoint to redirect to the original URL. It will redirect to the or
 
 ## TODO
 
-- [ ] Configure auto reload when file changes
+- [x] Configure auto reload when file changes
 - [ ] Add more tests
 - [ ] Add better error handling
 - [ ] Add a logger

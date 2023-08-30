@@ -1,4 +1,4 @@
-module github.com/jesusbibieca/go-url-shortener
+module github.com/jesusbibieca/url-shortener
 
 go 1.20
 
