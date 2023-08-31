@@ -14,6 +14,18 @@ I'm learning Go and I wanted to build something simple to get started. I want to
 
 - Go 1.20+
 - Redis
+- golang-migrate - This is used to run the migrations. You can install it with
+
+```bash
+  brew install golang-migrate
+```
+
+- sqlc - This is used to generate the code for the DB. You can install it with
+
+```bash
+  brew install sqlc
+```
+
 - Reflex (optional) - This is used to auto reload the server when a file changes. You can install it with
 
 ```bash
