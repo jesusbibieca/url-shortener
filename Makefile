@@ -5,7 +5,7 @@ dev-watch:
 	@reflex -r '\.go$$' -s -- sh -c '$(MAKE) dev'
 
 test:
-	@go test -v ./...
+	@go test -v -cover ./...
 
 test-watch:
 	@reflex -r '\.go$$' -s -- sh -c '$(MAKE) test'
