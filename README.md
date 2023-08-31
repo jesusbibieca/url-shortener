@@ -86,10 +86,10 @@ This is the endpoint to redirect to the original URL. It will redirect to the or
 - [x] Configure auto reload when file changes
 - [ ] Add more tests
 - [ ] Add better error handling
-- [ ] Add a logger
+- [x] Add a logger
 - [x] Add a config to set the port and other variables (maybe viper?)
-- [ ] Add a config to start redis and db with docker-compose (or something similar)
-- [ ] Add a database to store the URLs long term (maybe Postgres? or just sqlite?)
+- [x] Add a config to start redis and db with docker-compose (or something similar)
+- [x] Add a database to store the URLs long term (maybe Postgres? or just sqlite?)
 - [ ] Add authentication
 - [ ] Add a way to manage the URLs (CRUD)
 - [ ] Add a way to manage the users (CRUD)
