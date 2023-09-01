@@ -11,10 +11,9 @@ type config struct {
 	AppAddress string `mapstructure:"APP_ADDRESS"`
 
 	//redis
-	RedisPort     string `mapstructure:"REDIS_PORT"`
-	RedisDb       int    `mapstructure:"REDIS_DB"`
-	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisAddress  string `mapstructure:"REDIS_ADDRESS"`
+	RedisPort    string `mapstructure:"REDIS_PORT"`
+	RedisDb      int    `mapstructure:"REDIS_DB"`
+	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
 
 	//postgres
 	DbDriver string `mapstructure:"DB_DRIVER"`
@@ -34,7 +33,7 @@ func LoadConfig(path string) (*config, error) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Fatal("Error reading config file: ", err)
+		log.Println("Error reading config file: ", err)
 	}
 
 	err = viper.Unmarshal(&Config)

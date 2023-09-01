@@ -34,9 +34,8 @@ func InitializeStore() *StorageService {
 	}
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     config.RedisAddress,
-		Password: config.RedisPassword,
-		DB:       config.RedisDb,
+		Addr: config.RedisAddress,
+		DB:   config.RedisDb,
 	})
 
 	pong, err := redisClient.Ping(ctx).Result()
