@@ -1,5 +1,7 @@
 # URL shortener written in Go
 
+[![ci-test](https://github.com/jesusbibieca/url-shortener/actions/workflows/ci.yaml/badge.svg)](https://github.com/jesusbibieca/url-shortener/actions/workflows/ci.yaml)
+
 This is a simple URL shortener written in Go. It uses Redis as the DB and the web framework Gin.
 
 ## Why?
