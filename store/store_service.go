@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -28,9 +29,9 @@ var (
 const CacheDuration = 6 * time.Hour
 
 func InitializeStore() *StorageService {
-	config, err := environment.LoadConfig("..")
+	config, err := environment.LoadConfig("../")
 	if err != nil {
-		panic(fmt.Sprintf("Error loading config: %v", err))
+		log.Fatal("cannot load config:", err)
 	}
 
 	redisClient := redis.NewClient(&redis.Options{

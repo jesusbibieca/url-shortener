@@ -12,19 +12,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	// move this to the config file
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/url_shortener?sslmode=disable"
-)
-
 func main() {
 	config, err := environment.LoadConfig(".")
 	if err != nil {
 		panic(fmt.Sprintf("Error loading config: %v", err))
 	}
 
-	conn, err := sql.Open(dbDriver, dbSource)
+	conn, err := sql.Open(config.DbDriver, config.DbSource)
 	if err != nil {
 		log.Fatal("Cannot connect to db: ", err)
 	}
