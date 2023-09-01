@@ -34,7 +34,7 @@ func LoadConfig(path string) (*config, error) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Fatal("Error while reading config file %s", err)
+		log.Fatalf("Error while reading config file %s", err)
 	}
 
 	err = viper.Unmarshal(&Config)
