@@ -7,16 +7,17 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jesusbibieca/url-shortener/environment"
 )
 
 var testStore Store
 
-const (
-	dbSource = "postgresql://root:secret@localhost:5432/url-shortener?sslmode=disable"
-)
-
 func TestMain(m *testing.M) {
-	connPool, err := pgxpool.New(context.Background(), dbSource)
+	config, err := environment.LoadConfig("../../")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+	connPool, err := pgxpool.New(context.Background(), config.DbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}

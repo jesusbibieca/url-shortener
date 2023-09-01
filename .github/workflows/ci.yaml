@@ -40,8 +40,19 @@ jobs:
           sudo mv migrate /usr/bin/
           which migrate
 
+      - name: Generate .env.yaml file
+        run: chmod +x ./gen-env.sh && ./gen-env.sh
+
       - name: Run migrations
         run: make migrateup
 
       - name: Test
         run: make test
+        env:
+          APP_ADDRESS: ${{ vars.APP_ADDRESS }}
+          APP_PORT: ${{ vars.APP_PORT }}
+          DB_DRIVER: ${{ vars.DB_DRIVER }}
+          REDIS_ADDRESS: ${{ vars.REDIS_ADDRESS }}
+          REDIS_PORT: ${{ vars.REDIS_PORT }}
+          REDIS_DB: ${{ vars.REDIS_DB }}
+          DB_SOURCE: ${{ secrets.DB_SOURCE }}

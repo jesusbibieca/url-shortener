@@ -1,7 +1,6 @@
 package environment
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -12,22 +11,18 @@ type config struct {
 	AppAddress string `mapstructure:"APP_ADDRESS"`
 
 	//redis
-	RedisPort     string `mapstructure:"REDIS_PORT"`
-	RedisDb       int    `mapstructure:"REDIS_DB"`
-	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisAddress  string `mapstructure:"REDIS_ADDRESS"`
+	RedisPort    string `mapstructure:"REDIS_PORT"`
+	RedisDb      int    `mapstructure:"REDIS_DB"`
+	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
+
+	//postgres
+	DbDriver string `mapstructure:"DB_DRIVER"`
+	DbSource string `mapstructure:"DB_SOURCE"`
 }
 
 var Config config
 
 func LoadConfig(path string) (*config, error) {
-	viper.SetDefault("APP_PORT", "8080")
-	viper.SetDefault("APP_ADDRESS", "localhost:8080")
-	viper.SetDefault("REDIS_PORT", "6379")
-	viper.SetDefault("REDIS_DB", 0)
-	viper.SetDefault("REDIS_PASSWORD", "")
-	viper.SetDefault("REDIS_ADDRESS", "localhost:6379")
-
 	viper.SetConfigName(".env")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(path)
@@ -38,8 +33,7 @@ func LoadConfig(path string) (*config, error) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		fmt.Printf("Error while reading config file %s", err)
-		fmt.Println("Using default values")
+		log.Println("Error reading config file: ", err)
 	}
 
 	err = viper.Unmarshal(&Config)
