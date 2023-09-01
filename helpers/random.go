@@ -18,3 +18,7 @@ func RandomString(n int) string {
 func RandomEmail() string {
 	return RandomString(6) + "@" + RandomString(6) + ".com"
 }
+
+func RandomUrl() string {
+	return "http://" + RandomString(10) + ".com"
+}
