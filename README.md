@@ -87,14 +87,24 @@ This is the endpoint to redirect to the original URL. It will redirect to the or
 
 - [x] Configure auto reload when file changes
 - [ ] Add more tests
-- [ ] Add better error handling
+- [x] Add better error handling
 - [x] Add a logger
 - [x] Add a config to set the port and other variables (maybe viper?)
 - [x] Add a config to start redis and db with docker-compose (or something similar)
 - [x] Add a database to store the URLs long term (maybe Postgres? or just sqlite?)
 - [ ] Add authentication
-- [ ] Add a way to manage the URLs (CRUD)
-- [ ] Add a way to manage the users (CRUD)
+- [-] Add a way to manage the URLs (CRUD)
+  - [x] Create
+  - [x] Read
+  - [ ] Update
+  - [ ] Delete
+  - [ ] Expose to API
+- [-] Add a way to manage the users (CRUD)
+  - [x] Create
+  - [x] Read
+  - [ ] Update
+  - [ ] Delete
+  - [ ] Expose to API
 - [ ] Validate the URL before creating it (handle things like `http[s]://google.com` and `google.com`)
 - [ ] Add a way to track the number of times a URL is accessed
 - [ ] Add a way to track the number of times a URL is accessed by a specific user?
