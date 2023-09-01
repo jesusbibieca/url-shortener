@@ -20,7 +20,7 @@ type config struct {
 
 var Config config
 
-func LoadConfig() (*config, error) {
+func LoadConfig(path string) (*config, error) {
 	viper.SetDefault("APP_PORT", "8080")
 	viper.SetDefault("APP_ADDRESS", "localhost:8080")
 	viper.SetDefault("REDIS_PORT", "6379")
@@ -30,9 +30,9 @@ func LoadConfig() (*config, error) {
 
 	viper.SetConfigName(".env")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./")
-	viper.AddConfigPath("../")
-	viper.AddConfigPath("../../")
+	viper.AddConfigPath(path)
+
+	viper.AutomaticEnv()
 
 	// Find and read the config file
 	err := viper.ReadInConfig()

@@ -19,7 +19,7 @@ const (
 )
 
 func main() {
-	config, err := environment.LoadConfig()
+	config, err := environment.LoadConfig(".")
 	if err != nil {
 		panic(fmt.Sprintf("Error loading config: %v", err))
 	}

@@ -22,7 +22,7 @@ func (server *Server) getShortUrl(ctx *gin.Context) {
 }
 
 func (server *Server) createShortUrl(ctx *gin.Context) {
-	config, err := environment.LoadConfig()
+	config, err := environment.LoadConfig("../")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
