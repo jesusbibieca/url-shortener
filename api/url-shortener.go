@@ -1,7 +1,6 @@
-package handler
+package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,34 +10,33 @@ import (
 )
 
 type ShortUrlCreateRequest struct {
-	Url    string `json:"url"`
-	UserId string `json:"userId"`
+	Url    string `json:"url" binding:"required"`
+	UserId string `json:"userId" binding:"required"`
 }
 
-const BASE_URL = "http://localhost:8080/"
+func (server *Server) getShortUrl(ctx *gin.Context) {
+	shortUrl := ctx.Param("shortUrl")
+	url := store.RetrieveInitialUrl(shortUrl)
 
-func CreateShortUrl(c *gin.Context) {
+	ctx.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (server *Server) createShortUrl(ctx *gin.Context) {
 	config, err := environment.LoadConfig()
 	if err != nil {
-		panic(fmt.Sprintf("Error loading config: %v", err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
 	var shortUrlRequest ShortUrlCreateRequest
-	if err := c.ShouldBindJSON(&shortUrlRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(&shortUrlRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
 
 	shortUrl := shortener.GenerateShortLink(shortUrlRequest.Url, shortUrlRequest.UserId)
 	store.SaveUrlMapping(shortUrl, shortUrlRequest.Url, shortUrlRequest.UserId)
 
-	c.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
+		// refactor this
 		"shortUrl": "http://" + config.AppAddress + shortUrl,
 	})
-}
-
-func HandleShortUrlRedirect(c *gin.Context) {
-	shortUrl := c.Param("shortUrl")
-	url := store.RetrieveInitialUrl(shortUrl)
-
-	c.Redirect(http.StatusTemporaryRedirect, url)
 }
