@@ -1,16 +1,22 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/jesusbibieca/url-shortener/api"
+	db "github.com/jesusbibieca/url-shortener/db/sqlc"
 	"github.com/jesusbibieca/url-shortener/environment"
-	"github.com/jesusbibieca/url-shortener/handler"
 	"github.com/jesusbibieca/url-shortener/store"
+	_ "github.com/lib/pq"
 )
 
+const (
+	// move this to the config file
+	dbDriver = "postgres"
+	dbSource = "postgresql://root:secret@localhost:5432/url_shortener?sslmode=disable"
+)
 
 func main() {
 	config, err := environment.LoadConfig()
@@ -18,24 +24,21 @@ func main() {
 		panic(fmt.Sprintf("Error loading config: %v", err))
 	}
 
-	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Service is up and running 🚀"})
-	})
+	conn, err := sql.Open(dbDriver, dbSource)
+	if err != nil {
+		log.Fatal("Cannot connect to db: ", err)
+	}
 
-	router.POST("/create-short-url", func(c *gin.Context) {
-		handler.CreateShortUrl(c)
-	})
+	dbStore := db.NewStore(conn)
+	server := api.NewServer(dbStore)
 
-	router.GET("/:shortUrl", func(c *gin.Context) {
-		handler.HandleShortUrlRedirect(c)
-	})
-
+	// Redis
+	// move this to the api server ???
 	store.InitializeStore()
 
-	err = router.Run(config.AppAddress)
-
+	err = server.Start(config.AppAddress)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to start server %v", err))
+		log.Fatal("Cannot start server: ", err)
 	}
+
 }
