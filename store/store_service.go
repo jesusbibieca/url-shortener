@@ -28,7 +28,7 @@ var (
 const CacheDuration = 6 * time.Hour
 
 func InitializeStore() *StorageService {
-	config, err := environment.LoadConfig("..")
+	config, err := environment.LoadConfig("../")
 	if err != nil {
 		panic(fmt.Sprintf("Error loading config: %v", err))
 	}
