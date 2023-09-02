@@ -9,10 +9,13 @@ import (
 )
 
 func createNewUser(t *testing.T) User {
+	hashedPassword, err := helpers.HashPassword("password")
+	require.NoError(t, err)
+
 	args := CreateUserParams{
 		Username: helpers.RandomString(6),
 		Email:    helpers.RandomEmail(),
-		Password: helpers.RandomString(8),
+		Password: hashedPassword,
 	}
 
 	user, err := testStore.CreateUser(context.Background(), args)
