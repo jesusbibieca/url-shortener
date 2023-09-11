@@ -1,4 +1,4 @@
-package store
+package redis_store
 
 import (
 	"context"

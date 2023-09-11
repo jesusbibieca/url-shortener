@@ -96,15 +96,17 @@ This is the endpoint to redirect to the original URL. It will redirect to the or
 - [-] Add a way to manage the URLs (CRUD)
   - [x] Create
   - [x] Read
-  - [ ] Update
-  - [ ] Delete
-  - [ ] Expose to API
+  - [x] Update
+  - [x] Delete
+  - [x] Expose to API
 - [-] Add a way to manage the users (CRUD)
   - [x] Create
   - [x] Read
-  - [ ] Update
-  - [ ] Delete
-  - [ ] Expose to API
+  - ~~[ ]Update~~
+  - [x] Delete
+  - [x] Expose to API
+- [ ] Only owner deletes/updates URLs
+- [ ] handle caching
 - [ ] Validate the URL before creating it (handle things like `http[s]://google.com` and `google.com`)
 - [ ] Add a way to track the number of times a URL is accessed
 - [ ] Add a way to track the number of times a URL is accessed by a specific user?

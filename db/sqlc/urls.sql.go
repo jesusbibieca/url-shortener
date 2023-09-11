@@ -38,6 +38,54 @@ func (q *Queries) CreateShortUrl(ctx context.Context, arg CreateShortUrlParams) 
 	return i, err
 }
 
+const deleteShortUrl = `-- name: DeleteShortUrl :exec
+DELETE FROM urls
+WHERE short_url = $1
+`
+
+func (q *Queries) DeleteShortUrl(ctx context.Context, shortUrl pgtype.Text) error {
+	_, err := q.db.Exec(ctx, deleteShortUrl, shortUrl)
+	return err
+}
+
+const getPagedUrls = `-- name: GetPagedUrls :many
+SELECT id, user_id, original_url, short_url, created_at FROM urls
+ORDER BY id
+LIMIT $1 
+OFFSET $2
+`
+
+type GetPagedUrlsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetPagedUrls(ctx context.Context, arg GetPagedUrlsParams) ([]Url, error) {
+	rows, err := q.db.Query(ctx, getPagedUrls, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Url{}
+	for rows.Next() {
+		var i Url
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.OriginalUrl,
+			&i.ShortUrl,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getShortUrl = `-- name: GetShortUrl :one
 SELECT id, user_id, original_url, short_url, created_at FROM urls
 WHERE short_url = $1 LIMIT 1
@@ -63,6 +111,31 @@ WHERE id = $1 LIMIT 1
 
 func (q *Queries) GetShortUrlByID(ctx context.Context, id int32) (Url, error) {
 	row := q.db.QueryRow(ctx, getShortUrlByID, id)
+	var i Url
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OriginalUrl,
+		&i.ShortUrl,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateShortUrl = `-- name: UpdateShortUrl :one
+UPDATE urls
+SET original_url = $1
+WHERE short_url = $2
+returning id, user_id, original_url, short_url, created_at
+`
+
+type UpdateShortUrlParams struct {
+	OriginalUrl string      `json:"originalUrl"`
+	ShortUrl    pgtype.Text `json:"shortUrl"`
+}
+
+func (q *Queries) UpdateShortUrl(ctx context.Context, arg UpdateShortUrlParams) (Url, error) {
+	row := q.db.QueryRow(ctx, updateShortUrl, arg.OriginalUrl, arg.ShortUrl)
 	var i Url
 	err := row.Scan(
 		&i.ID,

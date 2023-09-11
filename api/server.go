@@ -15,12 +15,19 @@ func NewServer(store db.Store) *Server {
 	router := gin.Default()
 
 	router.GET("/", server.ping)
-	router.GET("/:shortUrl", server.getShortUrl)
 
+	// Url routes
+	router.GET("/r", server.getPagedUrls)
+	router.GET("/r/:shortUrl", server.getShortUrl)
 	router.POST("/shorten", server.createShortUrl)
+	router.PATCH("/r/:shortUrl", server.updateShortUrl)
+	router.DELETE("/r/:shortUrl", server.deleteShortUrl)
 
 	// User routes
+	router.GET("/users", server.getPagedUsers)
+	router.GET("/user/:id", server.getUser)
 	router.POST("/users", server.createUser)
+	router.DELETE("/user/:id", server.deleteUser)
 
 	server.router = router
 	return server

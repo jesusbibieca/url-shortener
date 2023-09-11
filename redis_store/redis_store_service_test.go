@@ -1,4 +1,4 @@
-package store
+package redis_store
 
 import (
 	"testing"
@@ -6,13 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 var testStorageService = &StorageService{}
 
 func init() {
 	testStorageService = InitializeStore()
 }
-
 
 func TestStoreInit(t *testing.T) {
 	assert.True(t, testStorageService.redisClient != nil)

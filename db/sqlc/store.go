@@ -7,6 +7,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+const (
+	DefaultLimit = 20
+	MaxLimit     = 50
+)
+
 type Store struct {
 	*Queries
 	connPool *pgxpool.Pool
