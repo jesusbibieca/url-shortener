@@ -18,15 +18,15 @@ func NewServer(store db.Store) *Server {
 
 	// Url routes
 	router.GET("/r", server.getPagedUrls)
+	router.POST("/r", server.createShortUrl)
 	router.GET("/r/:shortUrl", server.getShortUrl)
-	router.POST("/shorten", server.createShortUrl)
 	router.PATCH("/r/:shortUrl", server.updateShortUrl)
 	router.DELETE("/r/:shortUrl", server.deleteShortUrl)
 
 	// User routes
 	router.GET("/users", server.getPagedUsers)
-	router.GET("/user/:id", server.getUser)
 	router.POST("/users", server.createUser)
+	router.GET("/user/:id", server.getUser)
 	router.DELETE("/user/:id", server.deleteUser)
 
 	server.router = router

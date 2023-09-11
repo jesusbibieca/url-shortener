@@ -14,19 +14,21 @@ import (
 const createShortUrl = `-- name: CreateShortUrl :one
 INSERT INTO urls (
   user_id,
-  original_url
+  original_url,
+  short_url
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING id, user_id, original_url, short_url, created_at
 `
 
 type CreateShortUrlParams struct {
-	UserID      int32  `json:"userId"`
-	OriginalUrl string `json:"originalUrl"`
+	UserID      int32       `json:"userId"`
+	OriginalUrl string      `json:"originalUrl"`
+	ShortUrl    pgtype.Text `json:"shortUrl"`
 }
 
 func (q *Queries) CreateShortUrl(ctx context.Context, arg CreateShortUrlParams) (Url, error) {
-	row := q.db.QueryRow(ctx, createShortUrl, arg.UserID, arg.OriginalUrl)
+	row := q.db.QueryRow(ctx, createShortUrl, arg.UserID, arg.OriginalUrl, arg.ShortUrl)
 	var i Url
 	err := row.Scan(
 		&i.ID,

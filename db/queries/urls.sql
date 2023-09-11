@@ -1,9 +1,10 @@
 -- name: CreateShortUrl :one
 INSERT INTO urls (
   user_id,
-  original_url
+  original_url,
+  short_url
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING *;
 
 -- name: GetShortUrl :one

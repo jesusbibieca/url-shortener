@@ -13,16 +13,34 @@ import (
 	"github.com/jesusbibieca/url-shortener/shortener"
 )
 
-type ShortUrlCreateRequest struct {
-	Url    string `json:"url" binding:"required"`
-	UserId string `json:"userId" binding:"required"`
-}
-
 func (server *Server) getShortUrl(ctx *gin.Context) {
 	shortUrl := ctx.Param("shortUrl")
+	// get url from cache if exists
 	url := redis_store.RetrieveInitialUrl(shortUrl)
 
+	if url == "" {
+		// get url from db
+		dbUrl, err := server.store.GetShortUrl(ctx, pgtype.Text{
+			String: shortUrl,
+			Valid:  true,
+		})
+
+		if err != nil {
+			if err == db.ErrRecordNotFound {
+				ctx.JSON(http.StatusNotFound, errorResponse(err))
+				return
+			}
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		ctx.Redirect(http.StatusTemporaryRedirect, dbUrl.OriginalUrl)
+	}
 	ctx.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+type ShortUrlCreateRequest struct {
+	Url    string `json:"url" binding:"required"`
+	UserId int32  `json:"userId" binding:"required"`
 }
 
 func (server *Server) createShortUrl(ctx *gin.Context) {
@@ -36,12 +54,28 @@ func (server *Server) createShortUrl(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	shortUrl := shortener.GenerateShortLink(shortUrlRequest.Url, shortUrlRequest.UserId)
-	redis_store.SaveUrlMapping(shortUrl, shortUrlRequest.Url, shortUrlRequest.UserId)
+	newShortUrl := shortener.GenerateShortLink(shortUrlRequest.Url, string(shortUrlRequest.UserId))
+
+	url := pgtype.Text{
+		String: newShortUrl,
+		Valid:  true,
+	}
+
+	dbUrl, err := server.store.CreateShortUrl(ctx, db.CreateShortUrlParams{
+		UserID:      shortUrlRequest.UserId,
+		OriginalUrl: shortUrlRequest.Url,
+		ShortUrl:    url,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	redis_store.SaveUrlMapping(dbUrl.ShortUrl.String, dbUrl.OriginalUrl, string(dbUrl.UserID))
 
 	ctx.JSON(http.StatusOK, gin.H{
 		// TODO: refactor this
-		"shortUrl": "http://" + config.AppAddress + shortUrl,
+		"shortUrl": "http://" + config.AppAddress + "/" + newShortUrl,
 	})
 }
 
@@ -49,7 +83,6 @@ type ShortUrlUpdateRequest struct {
 	OriginalUrl string `json:"originalUrl" binding:"required"`
 }
 
-// router.PATCH("/r/:shortUrl", server.updateShortUrl)
 func (server *Server) updateShortUrl(ctx *gin.Context) {
 	shortUrl := ctx.Param("shortUrl")
 
@@ -90,7 +123,6 @@ func (server *Server) updateShortUrl(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, updatedUrl)
 }
 
-// router.DELETE("/r/:shortUrl", server.deleteShortUrl)
 func (server *Server) deleteShortUrl(ctx *gin.Context) {
 	shortUrl := ctx.Param("shortUrl")
 
