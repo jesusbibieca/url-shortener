@@ -9,7 +9,7 @@ import (
 	"github.com/jesusbibieca/url-shortener/api"
 	db "github.com/jesusbibieca/url-shortener/db/sqlc"
 	"github.com/jesusbibieca/url-shortener/environment"
-	"github.com/jesusbibieca/url-shortener/store"
+	"github.com/jesusbibieca/url-shortener/redis_store"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 
 	// Redis
 	// move this to the api server ???
-	store.InitializeStore()
+	redis_store.InitializeStore()
 
 	err = server.Start(config.AppAddress)
 	if err != nil {
