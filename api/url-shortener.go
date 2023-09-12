@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jesusbibieca/url-shortener/authentication"
 	db "github.com/jesusbibieca/url-shortener/db/sqlc"
 	"github.com/jesusbibieca/url-shortener/environment"
 	"github.com/jesusbibieca/url-shortener/redis_store"
@@ -132,7 +133,7 @@ func (server *Server) deleteShortUrl(ctx *gin.Context) {
 	}
 
 	// get url from db
-	_, err := server.store.GetShortUrl(ctx, url)
+	dbUrl, err := server.store.GetShortUrl(ctx, url)
 	if err != nil {
 		if err == db.ErrRecordNotFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -142,7 +143,12 @@ func (server *Server) deleteShortUrl(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: verify if the user is the owner of the url
+	// example of how to do authorization on routes
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*authentication.Payload)
+	if authPayload.UserID != dbUrl.UserID {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
 
 	// delete url from db
 	err = server.store.DeleteShortUrl(ctx, url)

@@ -24,7 +24,11 @@ func main() {
 	}
 
 	dbStore := db.NewStore(connPool)
-	server := api.NewServer(dbStore)
+	server, err := api.NewServer(&dbStore, *config)
+
+	if err != nil {
+		log.Fatal("cannot create server: ", err)
+	}
 
 	// Redis
 	// move this to the api server ???

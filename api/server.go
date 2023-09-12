@@ -1,36 +1,56 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jesusbibieca/url-shortener/authentication"
 	db "github.com/jesusbibieca/url-shortener/db/sqlc"
+	"github.com/jesusbibieca/url-shortener/environment"
 )
 
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	authTokenMaker authentication.PasetoMaker
+	config         environment.Configuration
+	router         *gin.Engine
+	store          *db.Store
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(store *db.Store, config environment.Configuration) (*Server, error) {
+	authTokenMaker, err := authentication.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create authTokenMaker %w", err)
+	}
+
+	server := &Server{
+		store:          store,
+		authTokenMaker: *authTokenMaker,
+	}
 	router := gin.Default()
 
+	// Health check
 	router.GET("/", server.ping)
 
+	// Authentication
+	router.POST("/auth/login", server.login)
+	router.POST("/auth/register", server.createUser)
+
+	authenticatedRoutes := router.Group("/").Use(authMiddleware(server.authTokenMaker))
+
 	// Url routes
-	router.GET("/r", server.getPagedUrls)
-	router.POST("/r", server.createShortUrl)
-	router.GET("/r/:shortUrl", server.getShortUrl)
-	router.PATCH("/r/:shortUrl", server.updateShortUrl)
-	router.DELETE("/r/:shortUrl", server.deleteShortUrl)
+	authenticatedRoutes.GET("/r", server.getPagedUrls)
+	authenticatedRoutes.POST("/r", server.createShortUrl)
+	authenticatedRoutes.GET("/r/:shortUrl", server.getShortUrl)
+	authenticatedRoutes.PATCH("/r/:shortUrl", server.updateShortUrl)
+	authenticatedRoutes.DELETE("/r/:shortUrl", server.deleteShortUrl)
 
 	// User routes
-	router.GET("/users", server.getPagedUsers)
-	router.POST("/users", server.createUser)
-	router.GET("/user/:id", server.getUser)
-	router.DELETE("/user/:id", server.deleteUser)
+	authenticatedRoutes.GET("/users", server.getPagedUsers)
+	authenticatedRoutes.GET("/user/:id", server.getUser)
+	authenticatedRoutes.DELETE("/user/:id", server.deleteUser)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 func (server *Server) Start(address string) error {
