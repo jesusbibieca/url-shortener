@@ -2,27 +2,32 @@ package environment
 
 import (
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
-type config struct {
+type Configuration struct {
 	AppPort    string `mapstructure:"APP_PORT"`
 	AppAddress string `mapstructure:"APP_ADDRESS"`
 
-	//redis
+	// REDIS
 	RedisPort    string `mapstructure:"REDIS_PORT"`
 	RedisDb      int    `mapstructure:"REDIS_DB"`
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
 
-	//postgres
+	// POSTGRES
 	DbDriver string `mapstructure:"DB_DRIVER"`
 	DbSource string `mapstructure:"DB_SOURCE"`
+
+	// AUTHENTICATION
+	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 }
 
-var Config config
+var Config Configuration
 
-func LoadConfig(path string) (*config, error) {
+func LoadConfig(path string) (*Configuration, error) {
 	viper.SetConfigName(".env")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(path)
